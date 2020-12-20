@@ -1,3 +1,32 @@
+n = int(input())
+    c = list(map(int, input().rstrip().split()))
+t = int(input())
+for _ in range(t):
+    n,m = map(int,input().split())
+    matrix = []
+    for i in range(n):
+        x = list(map(int,input().split()))
+        matrix.append(x)
+    m2 = [[0 for _ in range(m)] for _ in range(n)]
+t = int(input())
+while t>0:
+    try:
+        arr1 = list(map(int,input().split()))
+        arr2 = list(map(int,input().split()))
+ a,b=map(str,input().split()
+        for i in range(len(arr1)):
+            print(arr1[i]+arr2[i], end=" ")
+    except:
+        print()
+    t-=1
+t = int(input())
+for _ in range(t):
+    n,m = map(int,input().split())
+    matrix = []
+    for i in range(n):
+        x = list(map(int,input().split()))
+        matrix.append(x)
+    m2 = [[0 for _ in range(m)] for _ in range(n)]
 //python algo
 // breath first search-shortest path,graph contains only segment = {} graph[“you”] = [“alice”, “bob”, “claire”]
 //shortest path including cost-graph[“start”] = {},graph[“start”][“a”] = 6(neighbour hash),
