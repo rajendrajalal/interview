@@ -630,6 +630,184 @@ In more advanced roles, however, this extension allows subgenerators to receive 
 and thrown values directly from the calling scope, and return a final value to the outer
 generator. The net effect is to allow such generators to be split into multiple subgenerators much as a single function can be split into multiple subfunctions
 
+Files Generate Namespaces
+ Module statements run on the first import,Top-level assignments create module attributes,  Module namespaces can be accessed via the attribute__dict__ or dir(M),  Modules are a single scope (local is global), 
+ Namespace Dictionaries: __dict__
+In fact, internally, module namespaces are stored as dictionary objects. These are just
+normal dictionaries with all the usual methods
+The names we assigned in the module file become dictionary keys internally, so some
+of the names here reflect top-level assignments in our file. However, Python also adds
+some names in the module’s namespace for us; for instance, __file__ gives the name of the file the module was loaded from, and __name__ gives its name as known to importers (without the .py extension and directory path)
+The Scope of Relative Imports
+Relative imports can seem a bit perplexing on first encounter, but it helps if you remember a few key points about them:
+• Relative imports apply to imports within packages only. Keep in mind that
+this feature’s module search path change applies only to import statements within
+module files used as part of a package—that is, intrapackage imports. Normal
+imports in files not used as part of a package still work exactly as described earlier,
+automatically searching the directory containing the top-level script first.
+• Relative imports apply to the from statement only. Also remember that this
+feature’s new syntax applies only to from statements, not import statements. It’s
+detected by the fact that the module name in a from begins with one or more dots
+(periods). Module names that contain embedded dots but don’t have a leading dot
+are package imports, not relative imports
+
+Namespace packages
+ release 3.3 Python has four import models. From original to newest:
+Basic module imports: import mod, from mod import attr
+The original model: imports of files and their contents, relative to the sys.path
+module search path
+Package imports: import dir1.dir2.mod, from dir1.mod import attr
+Imports that give directory path extensions relative to the sys.path module search
+path, where each package is contained in a single directory and has an initialization
+file, in Python 2.X and 3.X
+Package-relative imports: from . import mod (relative), import mod (absolute)
+The model used for intrapackage imports of the prior section, with its relative or
+absolute lookup schemes for dotted and nondotted imports, available but differing
+in Python 2.X and 3.X
+Namespace packages: import splitdir.mod
+The new namespace package model that we’ll survey here, which allows packages
+to span multiple directories, and requires no initialization file, introduced in Python
+3.3
+
+
+Class Objects Provide Default Behavior
+When we run a class statement, we get a class object. Here’s a rundown of the main
+properties of Python classes:
+• The class statement creates a class object and assigns it a name. Just like the
+function def statement, the Python class statement is an executable statement.
+When reached and run, it generates a new class object and assigns it to the name
+in the class header. Also, like defs, class statements typically run when the files
+they are coded in are first imported.
+• Assignments inside class statements make class attributes. Just like in module
+files, top-level assignments within a class statement (not nested in a def) generate
+attributes in a class object. Technically, the class statement defines a local scope
+that morphs into the attribute namespace of the class object, just like a module’s
+global scope. After running a class statement, class attributes are accessed by name
+qualification: object.name.
+• Class attributes provide object state and behavior. Attributes of a class object
+record state information and behavior to be shared by all instances created from
+the class; function def statements nested inside a class generate methods, which
+process instances.
+
+Instance Objects Are Concrete Items
+When we call a class object, we get an instance object. Here’s an overview of the key
+points behind class instances:
+• Calling a class object like a function makes a new instance object. Each time
+a class is called, it creates and returns a new instance object. Instances represent
+concrete items in your program’s domain.
+ Each instance object inherits class attributes and gets its own namespace.
+Instance objects created from classes are new namespaces; they start out empty
+but inherit attributes that live in the class objects from which they were generated.
+• Assignments to attributes of self in methods make per-instance attributes.
+Inside a class’s method functions, the first argument (called self by convention)
+references the instance object being processed; assignments to attributes of self
+create or change data in the instance, not the class.
+OOP Is Simpler Than You May Think
+In this complete form, and despite their relatively small sizes, our classes capture nearly
+all the important concepts in Python’s OOP machinery:
+• Instance creation—filling out instance attributes
+• Behavior methods—encapsulating logic in a class’s methods
+• Operator overloading—providing behavior for built-in operations like printing
+• Customizing behavior—redefining methods in subclasses to specialize them
+• Customizing constructors—adding initialization logic to superclass steps
+
+Python and OOP
+Let’s begin with a review—Python’s implementation of OOP can be summarized by
+three ideas:
+Inheritance
+Inheritance is based on attribute lookup in Python (in X.name expressions).
+Polymorphism
+In X.method, the meaning of method depends on the type (class) of subject object X.
+Encapsulation
+Methods and operators implement behavior, though data hiding is a convention
+by default
+Technically, Python now supports three kinds of class-related methods, with differing
+argument protocols:
+• Instance methods, passed a self instance object (the default)
+• Static methods, passed no extra object (via staticmethod)
+• Class methods, passed a class object (via classmethod, and inherent in metaclasses)
+ Function decorators—the initial entry in this set, added in Python 2.4—augment
+function definitions. They specify special operation modes for both simple functions and classes’ methods by wrapping them in an extra layer of logic implemented
+as another function, usually called a metafunction.
+• Class decorators—a later extension, added in Python 2.6 and 3.0—augment class
+definitions. They do the same for classes, adding support for management of whole
+objects and their interfaces. Though perhaps simpler, they often overlap in roles
+with metaclasses.
+• The __getattr__ and __setattr__ methods, for routing undefined attribute fetches
+and all attribute assignments to generic handler methods.
+• The __getattribute__ method, for routing all attribute fetches to a generic handler
+method.
+• The property built-in, for routing specific attribute access to get and set handler
+functions.
+• The descriptor protocol, for routing specific attribute accesses to instances of classes
+with arbitrary get and set handler methods, and the basis for other tools such as
+properties and slots.
+Property
+The property protocol allows us to route a specific attribute’s get, set, and delete operations to functions or methods we provide, enabling us to insert code to be run automatically on attribute access, intercept attribute deletions, and provide documentation for the attributes if desired
+Descriptors
+Descriptors provide an alternative way to intercept attribute access; they are strongly
+related to the properties discussed in the prior section. Really, a property is a kind of
+descriptor—technically speaking, the property built-in is just a simplified way to create
+a specific type of descriptor that runs method functions on attribute accesses. In fact,
+descriptors are the underlying implementation mechanism for a variety of class tools,
+including both properties and slots.
+
+Decorator
+Decoration is a way to specify management or augmentation code for functions and
+classes. Decorators themselves take the form of callable objects (e.g., functions) that
+process other callable objects. As we saw earlier in this book, Python decorators come
+in two related flavors, neither of which requires 3.X or new-style classes:
+• Function decorators, added in Python 2.4, do name rebinding at function definition
+time, providing a layer of logic that can manage functions and methods, or later
+calls to them.
+ Class decorators, added in Python 2.6 and 3.0, do name rebinding at class definition
+time, providing a layer of logic that can manage classes, or the instances created
+by later calls to them.
+Managing Calls and Instances
+In typical use, this automatically run code may be used to augment calls to functions
+and classes. It arranges this by installing wrapper (a.k.a. proxy) objects to be invoked
+later:
+Call proxies
+Function decorators install wrapper objects to intercept later function calls and
+process them as needed, usually passing the call on to the original function to run
+the managed action.
+Interface proxies
+Class decorators install wrapper objects to intercept later instance creation calls
+and process them as required, usually passing the call on to the original class to
+create a managed instance.
+Decorators achieve these effects by automatically rebinding function and class names
+to other callables, at the end of def and class statements. When later invoked, these
+callables can perform tasks such as tracing and timing function calls, managing access
+to class instance attributes, and so on.
+
+Metaclass
+In a sense, metaclasses simply extend the code-insertion model of decorators. As we
+learned in the prior chapter, function and class decorators allow us to intercept and
+augment function calls and class instance creation calls. In a similar spirit, metaclasses
+allow us to intercept and augment class creation—they provide an API for inserting
+extra logic to be run at the conclusion of a class statement, albeit in different ways than
+decorators. Accordingly, they provide a general protocol for managing class objects in
+a program.
+A metaclass is a class used to create a class. Normal new-style classes are instances
+of the type class by default. Metaclasses are usually subclasses of the type class,
+which redefines class creation protocol methods in order to customize the class
+creation call issued at the end of a class statement; they typically redefine the
+methods __new__ and __init__ to tap into the class creation protocol. Metaclasses
+can also be coded other ways—as simple functions, for example—but they are
+always responsible for making and returning an object for the new class. Metaclasses may have methods and data to provide behavior for their classes too—and
+constitute a secondary pathway for inheritance search—but their attributes are
+accessible only to their class instances, not to their instance’s instances.
+
+Customization via inheritance
+Classes also support the OOP notion of inheritance; we can extend a class by redefining its attributes outside the class itself in new software components coded
+as subclasses. More generally, classes can build up namespace hierarchies, which
+define names to be used by objects created from classes in the hierarchy. This
+supports multiple customizable behaviors more directly than other tools.
+Operator overloading
+By providing special protocol methods, classes can define objects that respond to
+the sorts of operations we saw at work on built-in types. For instance, objects made
+with classes can be sliced, concatenated, indexed, and so on. Python provides
+hooks that classes can use to intercept and implement any built-in type operation.
 ...
 
 DOCKER
